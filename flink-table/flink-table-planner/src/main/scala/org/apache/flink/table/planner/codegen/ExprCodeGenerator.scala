@@ -679,13 +679,15 @@ class ExprCodeGenerator(ctx: CodeGeneratorContext, nullableInput: Boolean)
 
       // casting
       case CAST =>
+        val legacyCastEnabled = ctx.tableConfig
+          .get(ExecutionConfigOptions.TABLE_EXEC_LEGACY_CAST_BEHAVIOUR)
+          .isEnabled
         generateCast(
           ctx,
           operands.head,
-          resultType,
-          nullOnFailure = ctx.tableConfig
-            .get(ExecutionConfigOptions.TABLE_EXEC_LEGACY_CAST_BEHAVIOUR)
-            .isEnabled)
+          if (legacyCastEnabled) resultType.copy(true) else resultType,
+          nullOnFailure = legacyCastEnabled
+        )
 
       case TRY_CAST =>
         generateCast(ctx, operands.head, resultType, nullOnFailure = true)

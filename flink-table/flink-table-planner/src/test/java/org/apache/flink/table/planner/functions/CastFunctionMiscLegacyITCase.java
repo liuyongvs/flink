@@ -56,6 +56,16 @@ class CastFunctionMiscLegacyITCase extends BuiltInFunctionTestBase {
                                 "Column 'EXPR$0' is NOT NULL, however, a null value is "
                                         + "being written into it. You can set job configuration "
                                         + "'table.exec.sink.not-null-enforcer'='DROP' to suppress "
+                                        + "this exception and drop such records silently."),
+                TestSetSpec.forFunction(
+                                BuiltInFunctionDefinitions.CAST, "legacy cast failure returns null")
+                        .onFieldsWithData("100")
+                        .andDataTypes(STRING().notNull())
+                        .testSqlRuntimeError(
+                                "CAST(CAST(f0 AS DECIMAL(2, 0)) AS STRING)",
+                                "Column 'EXPR$0' is NOT NULL, however, a null value is "
+                                        + "being written into it. You can set job configuration "
+                                        + "'table.exec.sink.not-null-enforcer'='DROP' to suppress "
                                         + "this exception and drop such records silently."));
     }
 }
